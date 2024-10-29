@@ -1,0 +1,29 @@
+const express = require("express");
+const db = require("../db");
+
+const router = express.Router();
+
+router.get("/users/:userId", (req, res) => {
+  const userId = req.params.userId;
+
+  if (!userId) {
+    return res.status(400).json({ error: "userId is required" });
+  }
+
+  const sql = "SELECT * FROM users WHERE userId = ?";
+
+  db.query(sql, [userId], (err, results) => {
+    if (err) {
+      console.error("Failed to fetch user:", err);
+      res.status(500).json({ error: "Internal Server Error" });
+    } else {
+      if (results.length === 0) {
+        res.status(404).json({ error: "User not found" });
+      } else {
+        res.status(200).json(results[0]);
+      }
+    }
+  });
+});
+
+module.exports = router;
