@@ -6,7 +6,6 @@ const router = express.Router();
 // Get post articles by postId
 router.get("/getPost/:postId", async (req, res) => {
   const postId = req.params.postId; 
-  console.log("postId: ", postId);
 
   if (!postId) {
     return res.status(400).json({ error: "postId is required" });

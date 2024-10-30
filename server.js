@@ -7,6 +7,7 @@ const db = require('./db_connect/db');
 const authenRoutes = require("./routes/auth/auth"); 
 const accountRoutes = require("./routes/account/account"); 
 const postRoutes = require("./routes/post/post"); 
+const commentsRoutes = require("./routes/comment/comments"); 
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use(cors());
 app.use("/api/auth", authenRoutes);
 app.use("/api/account", accountRoutes);
 app.use("/api/post", postRoutes);
+app.use("/api/comments", commentsRoutes);
 
 // Kiểm tra kết nối cơ sở dữ liệu
 db.connect((err) => {
