@@ -10,38 +10,42 @@ const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-router.post("/create", upload.single("media"), async (req, res) => {
+// Change upload.single to upload.array to handle multiple files
+router.post("/create", upload.array("media", 10), async (req, res) => {
   const { accountId, postInfo, location } = req.body;
 
-  // Ensure file is uploaded and accountId is provided
-  if (!req.file || !accountId) {
-    return res.status(400).json({ error: "Image file and accountId are required" });
+  // Ensure files are uploaded and accountId is provided
+  if (!req.files || req.files.length === 0 || !accountId) {
+    return res.status(400).json({ error: "At least one image file and accountId are required" });
   }
-
-  // Convert the image file to Base64
-  const mediaBase64 = req.file.buffer.toString("base64");
-  const mediaDataUrl = `data:${req.file.mimetype};base64,${mediaBase64}`;
 
   try {
     const postId = uuidv4(); // Generate a unique postId
 
-    // Insert post data
+    // Insert post data into posts table
     await db.promise().query(
       "INSERT INTO posts (postId, accountId, content, location, created_at) VALUES (?, ?, ?, ?, NOW())",
       [postId, accountId, postInfo, location]
     );
 
-    // Insert media into the thumbnail table with the created postId
-    await db.promise().query(
-      "INSERT INTO thumnail (postId, media) VALUES (?, ?)",
-      [postId, mediaDataUrl]
-    );
+    // Loop through each uploaded file and insert into the thumbnail table
+    for (const file of req.files) {
+      // Convert the image file to Base64
+      const mediaBase64 = file.buffer.toString("base64");
+      const mediaDataUrl = `data:${file.mimetype};base64,${mediaBase64}`;
 
+      // Insert media into the thumbnail table with the created postId
+      await db.promise().query(
+        "INSERT INTO thumnail (postId, media) VALUES (?, ?)",
+        [postId, mediaDataUrl]
+      );
+    }
+
+    // Send a success response
     res.json({
       success: true,
       message: "The article has been created successfully.",
-      postId: postId,
-      media: mediaDataUrl
+      postId: postId
     });
   } catch (err) {
     console.error(err);
