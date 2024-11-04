@@ -8,6 +8,7 @@ const authenRoutes = require("./routes/auth/auth");
 const accountRoutes = require("./routes/account/account"); 
 const postRoutes = require("./routes/post/post"); 
 const commentsRoutes = require("./routes/comment/comments"); 
+const LikesRoutes = require("./routes/Likes/like"); 
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.use("/api/auth", authenRoutes);
 app.use("/api/account", accountRoutes);
 app.use("/api/post", postRoutes);
 app.use("/api/comments", commentsRoutes);
+app.use("/api/likes", LikesRoutes);
 
 // Kiểm tra kết nối cơ sở dữ liệu
 db.connect((err) => {
