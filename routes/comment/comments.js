@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
 
-const createCommentt_Router = require("./comments_Create");
+const createComment_Router = require("./comments_Create");
 const getCommentsPostID_Router = require("./comments_GetPostID");
 
 
-router.use("/post", createCommentt_Router);
+router.use("/post", createComment_Router);
 router.use("/get", getCommentsPostID_Router);
 
 router.get("/", (req, res) => {
